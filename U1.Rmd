@@ -1,0 +1,382 @@
+---
+title: "MoL_U1_2025"
+author: "Ana Karina Haique"
+date: "2025-05-13"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Capitulo 1: Vectores Aleatorios
+
+### Esperanza y varianza de una transformación lineal de un vector Aleatorio
+
+
+$$
+\mathbf{z} = A \mathbf{y} + \mathbf{c}
+$$
+
+Donde $\mathbf{y}$ es un vector aleatorio de orden 2x1
+
+Definimos:
+
+- Esperanza de $\mathbf{y}$:
+
+$$
+  E(\mathbf{y}) = \begin{bmatrix} 5 \\ 3 \end{bmatrix}
+$$
+
+- Matriz de varianzas y covarianzas de $\mathbf{y}$:
+
+$$
+  \text{Var}(\mathbf{y}) = \begin{bmatrix} 4 & 1 \\ 1 & 2 \end{bmatrix}
+$$
+  
+- Matriz de transformación:
+$$
+  A = \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix}
+$$
+
+- Vector de constantes:
+$$
+  \mathbf{c} = \begin{bmatrix} 1 \\ -1 \end{bmatrix}
+$$
+  
+```{python}
+import numpy as np
+```
+
+```{python}
+# Vector de medias de y
+mu_y = np.array([5, 3])
+print(mu_y)
+```
+
+_Nota:_ `mu_y` es un array 1D , de forma (2, ), que no distingue entre fila y columna por defecto. NumPy lo interpreta inteligentemente y como vector columna en este contexto. Pero esto puede llevar a confusión si no estás atento.
+ 
+```{python}
+# Matriz de varianzas y covarianzas de y
+Sigma_y = np.array([
+    [4, 1],
+    [1, 2]
+])
+print(Sigma_y)
+```
+
+ 
+```{python}
+# Matriz de transformación A
+A = np.array([
+    [1, 0],
+    [0, 2]
+])
+print(A)
+```
+  
+```{python}
+# Vector de constantes c
+c = np.array([1, -1])
+print(c)
+```
+
+### ✅ Cálculo de la Esperanza de $\mathbf{z}$
+
+Usamos la fórmula:
+
+$$
+E(\mathbf{z}) = A \cdot E(\mathbf{y}) + \mathbf{c}
+$$
+
+Sustituyendo los valores:
+
+$$
+E(\mathbf{z}) =
+\begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix}
+\cdot
+\begin{bmatrix} 5 \\ 3 \end{bmatrix}
++
+\begin{bmatrix} 1 \\ -1 \end{bmatrix}
+=
+\begin{bmatrix} 5 \\ 6 \end{bmatrix}
++
+\begin{bmatrix} 1 \\ -1 \end{bmatrix}
+=
+\begin{bmatrix} 6 \\ 5 \end{bmatrix}
+$$
+
+✅ **Resultado final:**
+$$
+E(\mathbf{z}) = \begin{bmatrix} 6 \\ 5 \end{bmatrix}
+$$
+
+```{python}
+# E(z) = A * E(y) + c
+mu_z = A @ mu_y + c
+print("Esperanza de z:")
+print(mu_z)
+```
+
+
+### 📊 Cálculo de la Varianza de $\mathbf{z}$
+
+La fórmula es:
+
+$$
+\text{Var}(\mathbf{z}) = A \cdot \text{Var}(\mathbf{y}) \cdot A'
+$$
+
+Donde $A'$ es la transpuesta de $A$.
+
+Sustituimos:
+
+$$
+\text{Var}(\mathbf{z}) =
+\begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix}
+\cdot
+\begin{bmatrix} 4 & 1 \\ 1 & 2 \end{bmatrix}
+\cdot
+\begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix}
+$$
+
+Primero calculamos:
+
+$$
+A \cdot \text{Var}(\mathbf{y}) =
+\begin{bmatrix} 4 & 1 \\ 2 & 4 \end{bmatrix}
+$$
+
+Luego:
+
+$$
+\text{Var}(\mathbf{z}) =
+\begin{bmatrix} 4 & 1 \\ 2 & 4 \end{bmatrix}
+\cdot
+\begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix}
+=
+\begin{bmatrix} 4 & 2 \\ 2 & 8 \end{bmatrix}
+$$
+
+✅ **Resultado final:**
+$$
+\text{Var}(\mathbf{z}) = \begin{bmatrix} 4 & 2 \\ 2 & 8 \end{bmatrix}
+$$
+
+```{python}
+# Var(z) = A * Var(y) * A'
+Sigma_z = A @ Sigma_y @ A.T
+print("\nMatriz de varianzas y covarianzas de z:")
+print(Sigma_z)
+```
+
+### 📌 Cálculo de la matriz de correlación
+
+Dada la matriz de varianzas y covarianzas:
+
+$$
+\boldsymbol{\Sigma} =
+\begin{bmatrix}
+4 & 2 \\
+2 & 8
+\end{bmatrix}
+$$
+
+**matriz de correlación**:
+
+$$
+\boldsymbol{\Pi} = D^{-1/2} \boldsymbol{\Sigma} D^{-1/2}
+$$
+
+donde:
+$\mathbf{D}$ es la **matriz diagonal** formada por las **varianzas** (elementos diagonales de $\boldsymbol{\Sigma}$)
+
+
+
+#### ✅ Paso 1: Extraer la matriz diagonal $D$
+
+$$
+D =
+\begin{bmatrix}
+4 & 0 \\
+0 & 8
+\end{bmatrix}
+$$
+
+#### ✅ Paso 2: Calcular $D^{-1/2}$
+
+Tomamos la raíz cuadrada de los elementos diagonales y luego invertimos:
+
+$$
+D^{1/2} =
+\begin{bmatrix}
+\sqrt{4} & 0 \\
+0 & \sqrt{8}
+\end{bmatrix}
+=
+\begin{bmatrix}
+2 & 0 \\
+0 & 2\sqrt{2}
+\end{bmatrix}
+\quad \Rightarrow \quad
+D^{-1/2} =
+\begin{bmatrix}
+\frac{1}{2} & 0 \\
+0 & \frac{1}{2\sqrt{2}}
+\end{bmatrix}
+$$
+
+#### ✅ Paso 3: Aplicar la fórmula
+
+$$
+\boldsymbol{\Pi} = D^{-1/2} \cdot \boldsymbol{\Sigma} \cdot D^{-1/2}
+$$
+
+Sustituimos:
+
+$$
+\boldsymbol{\Pi} =
+\begin{bmatrix}
+\frac{1}{2} & 0 \\
+0 & \frac{1}{2\sqrt{2}}
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+4 & 2 \\
+2 & 8
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+\frac{1}{2} & 0 \\
+0 & \frac{1}{2\sqrt{2}}
+\end{bmatrix}
+$$
+
+✅ **Resultado final (matriz de correlación):**
+
+$$
+\boxed{
+\boldsymbol{\Pi} =
+\begin{bmatrix}
+1 & \frac{1}{2\sqrt{2}} \\
+\frac{1}{2\sqrt{2}} & 1
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+1 & 0.3536 \\
+0.3536 & 1
+\end{bmatrix}
+}
+$$
+
+También es cierto:
+
+$$
+\boldsymbol{\Sigma} = D^{1/2} \cdot  \boldsymbol{\Pi}  \cdot D^{1/2}
+$$
+
+```{python}
+# Extraemos la diagonal y formamos D
+D = np.diag(np.diag(Sigma_z))
+print(D)
+```
+
+```{python}
+# Calculamos D^(-1/2)
+D_inv_half = np.diag(1 / np.sqrt(np.diag(D)))
+print(D_inv_half)
+```
+
+```{python}
+# Aplicamos la ecuación (1.11) del apunte
+Corr = D_inv_half @ Sigma_z @ D_inv_half
+print("Matriz de correlación:")
+print(Corr)
+```
+
+### Covarianza entre Vectores Aleatorios y su Transformación Lineal
+
+#### 1. Definición de los vectores aleatorios
+
+Sean $\mathbf{x}$ y $\mathbf{y}$ dos vectores aleatorios bivariados:
+
+$$
+E(\mathbf{x}) = \begin{bmatrix} 5 \\ 3 \end{bmatrix}, \quad
+E(\mathbf{y}) = \begin{bmatrix} 2 \\ 4 \end{bmatrix}
+$$
+
+Matriz de covarianzas cruzadas:
+
+$$
+\text{Cov}(\mathbf{x}, \mathbf{y}) =
+\begin{bmatrix}
+1 & -0.5 \\
+0.5 & 2
+\end{bmatrix}
+$$
+
+#### 2. Definición de las transformaciones lineales
+
+Dado que queremos calcular:
+
+$$
+\text{Cov}(A\mathbf{x} + \mathbf{a}, B\mathbf{y} + \mathbf{b})
+$$
+
+Definimos:
+
+$$
+A = \begin{bmatrix} 1 & 0 \\ 0 & 2 \end{bmatrix}, \quad
+B = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}, \quad
+\mathbf{a} = \begin{bmatrix} 1 \\ -1 \end{bmatrix}, \quad
+\mathbf{b} = \begin{bmatrix} 0 \\ 2 \end{bmatrix}
+$$
+
+#### 3. Propiedad de la covarianza
+
+$$
+\text{Cov}(A\mathbf{x} + \mathbf{a}, B\mathbf{y} + \mathbf{b}) = A \cdot \text{Cov}(\mathbf{x}, \mathbf{y}) \cdot B'
+$$
+
+Los términos constantes $\mathbf{a}$ y $\mathbf{b}$ **no afectan la covarianza**.
+
+#### 4. Cálculo
+
+$$
+A \cdot \text{Cov}(\mathbf{x}, \mathbf{y}) \cdot B'=
+\begin{bmatrix}
+1 & 0 \\
+0 & 2
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+1 & -0.5 \\
+0.5 & 2
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+0 & 1 \\
+1 & 0
+\end{bmatrix}
+=
+$$
+
+
+#### 5. Resultado final
+
+$$
+\text{Cov}(A\mathbf{x} + \mathbf{a}, B\mathbf{y} + \mathbf{b}) =
+\begin{bmatrix}
+-0.5 & 1 \\
+4 & 1
+\end{bmatrix}
+$$
+
+Este resultado indica cómo se relacionan las componentes del vector transformado $A\mathbf{x} + \mathbf{a}$ con las del vector $B\mathbf{y} + \mathbf{b}$. Por ejemplo, el elemento (1,2) indica cómo se mueve el primer componente de $A\mathbf{x} + \mathbf{a}$ con respecto al segundo de $B\mathbf{y} + \mathbf{b}$.
+
+
+```{python}
+
+```
+
+
